@@ -1,70 +1,117 @@
-# Getting Started with Create React App
+# Expense Tracker
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A clean and intuitive personal finance management application built with React. Track income, expenses, and manage your balance with ease.
+
+## Overview
+
+Expense Tracker is a single-page application that enables users to record, categorize, and analyze their financial transactions. All data is stored locally in the browser, ensuring privacy and accessibility without requiring a backend server.
+
+## Features
+
+- **Transaction Management**: Add, edit, and delete income and expense transactions
+- **Financial Summary**: View real-time calculations of total income, expenses, and balance
+- **Advanced Filtering**: Filter transactions by type, category, date, and search keywords
+- **Persistent Storage**: Transactions are automatically saved to browser localStorage
+- **Responsive Design**: Clean, modern UI optimized for desktop and mobile devices
+- **Date Support**: Track transactions with specific dates and month-based filtering
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v14 or higher)
+- npm (v6 or higher)
+
+### Installation
+
+1. Clone or navigate to the project directory:
+   ```bash
+   cd expense-tracker
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the development server:
+   ```bash
+   npm start
+   ```
+
+4. Open your browser and navigate to `http://localhost:3000`
+
+## Usage
+
+### Adding a Transaction
+1. Fill in the transaction form with amount, category, type (income/expense), and date
+2. Click **Add** to record the transaction
+3. The summary and transaction list update automatically
+
+### Filtering Transactions
+- **Type Filter**: View only income, expenses, or all transactions
+- **Search Filter**: Find transactions by note or category name
+- **Month Filter**: Display transactions from a specific month
+
+### Editing/Deleting
+- Click **Edit** on any transaction to modify its details
+- Click **Delete** to remove a transaction
+- Changes are reflected immediately in the summary
+
+## Project Structure
+
+```
+src/
+├── components/          # React components
+│   ├── Header.jsx
+│   ├── Summary.jsx
+│   ├── Filters.jsx
+│   ├── TransactionForm.jsx
+│   ├── TransactionItem.jsx
+│   └── TransactionList.jsx
+├── context/            # React context for state management
+│   └── TransactionsContext.jsx
+├── hooks/              # Custom React hooks
+│   └── useLocalStorage.js
+├── utils/              # Utility functions
+│   └── currency.js
+├── App.jsx
+├── index.js
+└── styles.css
+```
 
 ## Available Scripts
 
-In the project directory, you can run:
+### Development
+```bash
+npm start
+```
+Runs the app in development mode at `http://localhost:3000`
 
-### `npm start`
+### Build
+```bash
+npm run build
+```
+Creates an optimized production build in the `build/` folder
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Testing
+```bash
+npm test
+```
+Runs the test suite in interactive watch mode
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Technologies
 
-### `npm test`
+- **React** (v19.2.3) - UI library
+- **date-fns** (v4.1.0) - Date manipulation
+- **UUID** (v13.0.0) - Unique transaction IDs
+- **React Scripts** (v5.0.1) - Build and development tools
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Browser Compatibility
 
-### `npm run build`
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
