@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTransactions } from '../context/TransactionsContext';
+import { DatePicker } from './DatePicker';
 
 const empty = {
   type: 'expense',
@@ -73,10 +74,10 @@ export default function TransactionForm({ editing, onDone }) {
           </div>
           <div>
             <label className="muted">Date</label>
-            <input
-              type="date"
+            <DatePicker
               value={form.date}
-              onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
+              onChange={(date) => setForm((f) => ({ ...f, date }))}
+              placeholder="Select date"
             />
           </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'end' }}>
