@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTransactions } from '../context/TransactionsContext';
 import { DatePicker } from './DatePicker';
+import { getCategoriesByType } from '../utils/categories';
 
 const empty = {
   type: 'expense',
@@ -10,13 +11,69 @@ const empty = {
   date: new Date().toISOString().slice(0, 10), // yyyy-mm-dd
 };
 
-export default function TransactionForm({ editing, onDone }) {
+export default function TransactionForm({ editing, onDone, selectedMonth, selectedYear }) {
   const { addTransaction, updateTransaction } = useTransactions();
-  const [form, setForm] = useState(editing ? editing : empty);
+
+  // Helper to get default date based on selected month/year
+  const getDefaultDate = () => {
+    const today = new Date();
+    // If no specific month selected (or 'all' logic implied, though passed as numbers here)
+    if (selectedMonth === undefined || selectedYear === undefined) {
+      return today.toISOString().slice(0, 10);
+    }
+
+    // If selected matches today's month/year, use today
+    if (selectedMonth === today.getMonth() && selectedYear === today.getFullYear()) {
+      return today.toISOString().slice(0, 10);
+    }
+
+    // Otherwise use 1st of selected month
+    // Handle timezone offset by creating date at noon local time to ensure safe ISO string
+    // Or just construct string manually
+    const year = selectedYear;
+    const month = String(selectedMonth + 1).padStart(2, '0');
+    return `${year}-${month}-01`;
+  };
+
+  const getEmptyForm = () => ({
+    type: 'expense',
+    amount: '',
+    category: getCategoriesByType('expense')[0],
+    note: '',
+    date: getDefaultDate(),
+  });
+
+  const [form, setForm] = useState(editing ? editing : getEmptyForm());
+
+  // Update default category when type changes
+  useEffect(() => {
+    if (!editing) {
+      const categories = getCategoriesByType(form.type);
+      // If current category is not in the new list, reset it
+      if (!categories.includes(form.category)) {
+        setForm(f => ({ ...f, category: categories[0] }));
+      }
+    }
+  }, [form.type, editing]);
+
+  // Update form date when selected month/year changes, only if not editing
+  useEffect(() => {
+    if (!editing) {
+      setForm(prev => ({
+        ...prev,
+        date: getDefaultDate()
+      }));
+    }
+  }, [selectedMonth, selectedYear, editing]);
 
   useEffect(() => {
-    setForm(editing ? editing : empty);
-  }, [editing]);
+    if (editing) {
+      setForm(editing);
+    } else {
+      // If we finished editing or switched to add mode, reset with correct date
+      setForm(getEmptyForm());
+    }
+  }, [editing]); // Removed selectedMonth/Year dependency here to avoid double update logic conflict
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -27,8 +84,10 @@ export default function TransactionForm({ editing, onDone }) {
       addTransaction(form);
     }
     onDone?.();
-    setForm(empty);
+    setForm(getEmptyForm());
   };
+
+  const categories = getCategoriesByType(form.type);
 
   return (
     <div className="container">
@@ -58,11 +117,14 @@ export default function TransactionForm({ editing, onDone }) {
           </div>
           <div>
             <label className="muted">Category</label>
-            <input
+            <select
               value={form.category}
               onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
-              placeholder="Food, Rent, Salary…"
-            />
+            >
+              {categories.map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="muted">Note</label>

@@ -1,5 +1,5 @@
 import { TransactionsProvider } from '../context/TransactionsContext';
-import { useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useTransactions } from '../context/TransactionsContext';
 import ExpenseChart from '../components/ExpenseChart';
 
@@ -14,17 +14,42 @@ export default function Reports() {
 function ReportsPage() {
   const { transactions } = useTransactions();
 
+  // Default to current month/year
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+
+  // Generate month options
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  // Generate year options
+  const currentYear = new Date().getFullYear();
+  const years = [currentYear, currentYear - 1, currentYear - 2];
+
+  // Filter transactions by selected month/year
+  const filteredTransactions = useMemo(() => {
+    return transactions.filter((tx) => {
+      const txDate = new Date(tx.date);
+      return (
+        txDate.getMonth() === selectedMonth &&
+        txDate.getFullYear() === selectedYear
+      );
+    });
+  }, [transactions, selectedMonth, selectedYear]);
+
   const stats = useMemo(() => {
-    const income = transactions
+    const income = filteredTransactions
       .filter(t => t.type === 'income')
       .reduce((sum, t) => sum + t.amount, 0);
 
-    const expenses = transactions
+    const expenses = filteredTransactions
       .filter(t => t.type === 'expense')
       .reduce((sum, t) => sum + t.amount, 0);
 
     const byCategory = {};
-    transactions.forEach(t => {
+    filteredTransactions.forEach(t => {
       if (!byCategory[t.category]) {
         byCategory[t.category] = { income: 0, expense: 0 };
       }
@@ -36,11 +61,55 @@ function ReportsPage() {
     });
 
     return { income, expenses, byCategory };
-  }, [transactions]);
+  }, [filteredTransactions]);
 
   return (
     <div className="container">
       <h1 style={{ marginTop: '80px', marginBottom: '24px' }}>Financial Reports</h1>
+
+      {/* Month/Year Selector */}
+      <div style={{
+        display: 'flex',
+        gap: '12px',
+        marginBottom: '24px',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <select
+          value={selectedMonth}
+          onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+          style={{
+            padding: '8px 12px',
+            borderRadius: '6px',
+            border: '1px solid var(--border)',
+            background: 'var(--card-bg)',
+            color: 'var(--text)',
+            fontSize: '14px',
+            cursor: 'pointer',
+          }}
+        >
+          {months.map((month, index) => (
+            <option key={month} value={index}>{month}</option>
+          ))}
+        </select>
+        <select
+          value={selectedYear}
+          onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+          style={{
+            padding: '8px 12px',
+            borderRadius: '6px',
+            border: '1px solid var(--border)',
+            background: 'var(--card-bg)',
+            color: 'var(--text)',
+            fontSize: '14px',
+            cursor: 'pointer',
+          }}
+        >
+          {years.map((year) => (
+            <option key={year} value={year}>{year}</option>
+          ))}
+        </select>
+      </div>
 
       <div className="row">
         <div className="card">
@@ -48,7 +117,7 @@ function ReportsPage() {
             Total Income
           </h3>
           <div style={{ fontSize: '28px', fontWeight: 'bold', color: 'var(--accent)' }}>
-            ${stats.income.toFixed(2)}
+            ₹{stats.income.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
           </div>
         </div>
         <div className="card">
@@ -56,7 +125,7 @@ function ReportsPage() {
             Total Expenses
           </h3>
           <div style={{ fontSize: '28px', fontWeight: 'bold', color: 'var(--danger)' }}>
-            ${stats.expenses.toFixed(2)}
+            ₹{stats.expenses.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
           </div>
         </div>
       </div>
@@ -70,7 +139,7 @@ function ReportsPage() {
         <h2 style={{ marginTop: 0 }}>Breakdown by Category</h2>
         <div className="list">
           {Object.entries(stats.byCategory).length === 0 ? (
-            <p style={{ color: 'var(--muted)', textAlign: 'center' }}>No transactions to analyze</p>
+            <p style={{ color: 'var(--muted)', textAlign: 'center' }}>No transactions for {months[selectedMonth]} {selectedYear}</p>
           ) : (
             Object.entries(stats.byCategory).map(([category, data]) => (
               <div key={category} style={{ padding: '12px', borderBottom: '1px solid var(--border)' }}>
@@ -79,13 +148,13 @@ function ReportsPage() {
                   {data.income > 0 && (
                     <div>
                       <span style={{ color: 'var(--muted)', fontSize: '12px' }}>Income: </span>
-                      <span style={{ color: 'var(--accent)', fontWeight: 500 }}>+${data.income.toFixed(2)}</span>
+                      <span style={{ color: 'var(--accent)', fontWeight: 500 }}>+₹{data.income.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                     </div>
                   )}
                   {data.expense > 0 && (
                     <div>
                       <span style={{ color: 'var(--muted)', fontSize: '12px' }}>Expense: </span>
-                      <span style={{ color: 'var(--danger)', fontWeight: 500 }}>-${data.expense.toFixed(2)}</span>
+                      <span style={{ color: 'var(--danger)', fontWeight: 500 }}>-₹{data.expense.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                     </div>
                   )}
                 </div>
